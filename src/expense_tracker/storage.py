@@ -1,14 +1,17 @@
-import os
 import json
+from pathlib import Path
+from abc import ABC, abstractmethod
 
 
-class Storage:
+class Storage(ABC):
+    @abstractmethod
     def load(self):
         """
         Load expenses from the storage.
         """
         raise NotImplementedError("Subclasses should implement this!")
 
+    @abstractmethod
     def save(self, data):
         """
         Save expenses to the storage.
@@ -19,29 +22,24 @@ class Storage:
 class JSONStorage(Storage):
     def __init__(self, filename: str):
         self.filename = filename
-        self.load()
+        self.filepath = Path(filename)
 
     def load(self):
-        data = []
+        """
+        Load expenses from the JSON file.
+        Returns an empty list if file does not exist or is invalid.
+        """
+        if not self.filepath.exists():
+            return []
+
         try:
-            with open(self.filename, 'r') as file:
-                data = json.load(file)
-        except FileNotFoundError:
-            pass
+            with self.filepath.open("r", encoding="utf-8") as file:
+                return json.load(file)
         except json.JSONDecodeError:
             print("Error decoding JSON. Starting with an empty list.")
-
-        return data
-
-    def ensure_directory(self):
-        """
-        Ensure the directory for the file exists.
-        """
-        directory = os.path.dirname(self.filename)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+            return []
 
     def save(self, data):
-        self.ensure_directory()
-        with open(self.filename, 'w') as file:
+        self.filepath.parent.mkdir(parents=True, exist_ok=True)
+        with self.filepath.open("w", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
