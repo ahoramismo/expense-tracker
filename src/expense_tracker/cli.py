@@ -1,31 +1,25 @@
-import expense_tracker.core as core
+from expense_tracker.core import Expense
 from expense_tracker.parser import create_parser
+from expense_tracker.storage import JSONStorage
 
 
 def main():
-    """
-    supported commands
-    1. add
-    2. update
-    3. delete
-    4. view list (with filter)
-    5. view summary (with filter)
-    """
-
     parser = create_parser()
     args = parser.parse_args()
+    expense = Expense(storage=JSONStorage("database/expenses.json"))
 
     match args.command:
         case "add":
-            core.add(args.description, args.amount)
+            expense.add(args.description, args.amount)
         case "update":
-            core.update(args.description, args.amount)
+            expense.update(args.id, args.description, args.amount)
         case "delete":
-            core.delete(args.id)
+            expense.delete(args.id)
         case "list":
-            core.list_expenses(args.year, args.month, args.date, args.filter)
+            expense.list_expenses(args.year, args.month,
+                                  args.date, args.filter)
         case "summary":
-            core.summary(args.year, args.month, args.date, args.filter)
+            expense.summary(args.year, args.month, args.date, args.filter)
 
 
 if __name__ == 'main':

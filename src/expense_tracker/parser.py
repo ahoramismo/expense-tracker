@@ -22,13 +22,14 @@ def create_parser():
     # Update command
     update_parser = subparsers.add_parser(
         "update", help="Update the existing expense")
+    update_parser.add_argument("--id", type=int, required=True)
     update_parser.add_argument("--description", required=False)
     update_parser.add_argument("--amount", type=float, required=False)
 
     # Delete command
     delete_parser = subparsers.add_parser(
         "delete", help="Delete an expense entry")
-    delete_parser.add_argument("--id", type=int, required=False)
+    delete_parser.add_argument("--id", type=int, required=True)
 
     # List command
     list_parser = subparsers.add_parser(
@@ -44,5 +45,5 @@ def create_parser():
     summary_parser.add_argument("--month", type=int, required=False)
     summary_parser.add_argument("--date", type=int, required=False)
     summary_parser.add_argument("--filter", type=str, required=False)
-    
+
     return parser
